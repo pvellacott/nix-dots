@@ -8,14 +8,30 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { nixpkgs, home-manager, ... }: {
-    nixosConfigurations.braptop = nixpkgs.lib.nixosSystem {
+  outputs = { nixpkgs, home-manager, ... }:
+    let
       system = "x86_64-linux";
-      modules = [
-        ./configuration.nix
-        home-manager.nixosModules.home-manager
-      ];
+
+      mkHost = { hostname, areYaGaminSon }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit areYaGaminSon; };
+          modules = [
+            ./hosts/${hostname}
+            ./modules/home.nix
+            ./modules/steamstuff.nix
+            home-manager.nixosModules.home-manager
+          ];
+        };
+    in {
+    nixosConfigurations.braptop = mkHost {
+      hostname = "braptop";
+      areYaGaminSon = false;
+    };
+
+    nixosConfigurations.desktop = mkHost {
+      hostname = "desktop";
+      areYaGaminSon = true;
     };
   };
 }
-

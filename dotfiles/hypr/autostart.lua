@@ -8,9 +8,8 @@ return function(programs)
     -- Autostart necessary processes (like notifications daemons, status bars, etc.)
     -- Or execute your favorite apps at launch like this:
     --
-    -- hl.on("hyprland.start", function () 
-    --   hl.exec_cmd(programs.terminal)
-    --   hl.exec_cmd("nm-applet")
-    --   hl.exec_cmd("waybar & hyprpaper & firefox")
-    -- end)
+    hl.on("hyprland.start", function ()
+        hl.exec_cmd("command -v quickshell >/dev/null 2>&1 && quickshell -p ~/.config/quickshell")
+        hl.exec_cmd("command -v hypridle >/dev/null 2>&1 && hypridle")
+    end)
 end

@@ -16,6 +16,10 @@ return function(programs)
     hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd(programs.menu))
     hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
     hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
+    hl.bind(mainMod .. " + CTRL + L", hl.dsp.exec_cmd("pidof hyprlock || hyprlock"))
+
+    local screenshot = [[bash -lc 'mkdir -p "$HOME/Pictures/Screenshots"; file="$HOME/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png"; area="$(slurp)"; [ -n "$area" ] && grim -g "$area" "$file" && wl-copy < "$file" && notify-send "Screenshot saved" "$file"']]
+    hl.bind("Print", hl.dsp.exec_cmd(screenshot))
 
     -- Move focus with mainMod + arrow keys
     hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
@@ -50,8 +54,10 @@ return function(programs)
     hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
     hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                  { locked = true, repeating = true })
     hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                  { locked = true, repeating = true })
+    hl.bind("XF86KbdBrightnessUp",  hl.dsp.exec_cmd("brightnessctl -d 'tpacpi::kbd_backlight' set +1"), { locked = true, repeating = true })
+    hl.bind("XF86KbdBrightnessDown",hl.dsp.exec_cmd("brightnessctl -d 'tpacpi::kbd_backlight' set 1-"), { locked = true, repeating = true })
+    hl.bind("XF86KbdLightOnOff",    hl.dsp.exec_cmd("bash -lc 'dev=tpacpi::kbd_backlight; cur=$(brightnessctl -d \"$dev\" get); max=$(brightnessctl -d \"$dev\" max); brightnessctl -d \"$dev\" set $(( (cur + 1) % (max + 1) ))'"), { locked = true })
 
-    -- Requires playerctl
     hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })
     hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
     hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })

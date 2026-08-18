@@ -2,25 +2,27 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, areYaGaminSon ? false, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
-
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
-  networking.hostName = "braptop"; # Define your hostname.
+  boot.initrd.systemd.enable = true;
+  boot.plymouth.enable = true;
+  boot.kernelParams = [ "quiet" "splash" ];
 
   # Configure network connections interactively with nmcli or nmtui.
   networking.networkmanager.enable = true;
+  networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
+
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
 
   # Set your time zone.
-  time.timeZone = "Pacific/Aukland";
+  time.timeZone = "Pacific/Auckland";
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -55,39 +57,6 @@
  
   nix.settings.experimental-features = [ "nix-command" "flakes" ]; 
 
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.users.smoo = { pkgs, ... }: {
-    home.stateVersion = "26.05";
-      gtk = {
-        enable = true;
-        theme = {
-          name = "Adwaita-dark";
-          package = pkgs.gnome-themes-extra;
-      };
-      iconTheme = {
-        name = "Yaru-blue";
-        package = pkgs.yaru-theme;
-      };
-      cursorTheme = {
-        name = "Yaru";
-        package = pkgs.yaru-theme;
-        size = 24;
-      };
-    };
-    programs.bash = {
-      enable = true;
-
-      shellAliases = {
-        rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#braptop";
-      };
-
-      bashrcExtra = ''
-        export EDITOR=nvim
-      '';
-    };
-  };
-
   # Configure keymap in X11
   # services.xserver.xkb.layout = "us";
   # services.xserver.xkb.options = "eurosign:e,caps:escape";
@@ -117,6 +86,8 @@
 
   programs.firefox.enable = true;
 
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
   # Font
 
   fonts.packages = with pkgs; [
@@ -126,24 +97,46 @@
   # Packages list
 
   nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [
+    builtins.elem (lib.getName pkg) ([
       "discord"
-    ];
+      "obsidian"
+    ] ++ lib.optionals areYaGaminSon [
+      "steam"
+      "steam-original"
+      "steam-run"
+      "steam-unwrapped"
+    ]);
  
   environment.systemPackages = with pkgs; [
     vim
     neovim
+    fastfetch
     git
     wget
     foot
     waybar
-    git
+    quickshell
+    hyprlock
+    hypridle
+    kanshi
     rofi
-    xfce.thunar
-    xfce.tumbler
+    thunar
+    tumbler
     gvfs
+    grim
+    slurp
+    wl-clipboard
+    libnotify
+    brightnessctl
+    playerctl
     opencode
     discord
+    obsidian
+    signal-desktop
+    imv
+    mpv
+    localsend
+    cliamp
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -190,4 +183,3 @@
   system.stateVersion = "26.05"; # Did you read the comment?
 
 }
-

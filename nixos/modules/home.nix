@@ -1,0 +1,96 @@
+{ pkgs, ... }:
+
+{
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+
+  home-manager.users.smoo = { pkgs, ... }: {
+    home.stateVersion = "26.05";
+
+    gtk = {
+      enable = true;
+      theme = {
+        name = "Adwaita-dark";
+        package = pkgs.gnome-themes-extra;
+      };
+      iconTheme = {
+        name = "Yaru-blue";
+        package = pkgs.yaru-theme;
+      };
+      cursorTheme = {
+        name = "Yaru";
+        package = pkgs.yaru-theme;
+        size = 24;
+      };
+    };
+
+    programs.bash = {
+      enable = true;
+      enableCompletion = true;
+
+      shellAliases = {
+        rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#braptop";
+        vim = "nvim";
+        c = "opencode";
+        ls = "eza -lh --group-directories-first --icons=auto";
+        lsa = "ls -a";
+        lt = "eza --tree --level=2 --long --icons --git";
+        lta = "lt -a";
+      };
+
+      bashrcExtra = ''
+        export EDITOR=nvim
+        bind 'set completion-ignore-case on'
+        bind 'set completion-map-case on'
+        bind 'set show-all-if-ambiguous on'
+        PS1='\[\e[1;38;2;129;152;144m\]\w \[\e[1;38;2;165;181;171m\]❯ \[\e[0m\]'
+      '';
+    };
+
+    programs.eza = {
+      enable = true;
+      icons = "auto";
+      git = true;
+    };
+
+    programs.fzf = {
+      enable = true;
+      enableBashIntegration = true;
+    };
+
+    xdg.mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "image/jpeg" = [ "imv.desktop" ];
+        "image/png" = [ "imv.desktop" ];
+        "image/gif" = [ "imv.desktop" ];
+        "image/webp" = [ "imv.desktop" ];
+        "image/bmp" = [ "imv.desktop" ];
+        "image/tiff" = [ "imv.desktop" ];
+        "image/svg+xml" = [ "imv.desktop" ];
+
+        "video/mp4" = [ "mpv.desktop" ];
+        "video/x-matroska" = [ "mpv.desktop" ];
+        "video/x-msvideo" = [ "mpv.desktop" ];
+        "video/webm" = [ "mpv.desktop" ];
+        "video/quicktime" = [ "mpv.desktop" ];
+        "video/mpeg" = [ "mpv.desktop" ];
+      };
+    };
+
+    systemd.user.services.hypridle = {
+      Unit = {
+        Description = "Hyprland idle daemon";
+        After = [ "graphical-session.target" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+
+      Service = {
+        ExecStart = "${pkgs.hypridle}/bin/hypridle";
+        Restart = "on-failure";
+      };
+
+      Install.WantedBy = [ "graphical-session.target" ];
+    };
+  };
+}
