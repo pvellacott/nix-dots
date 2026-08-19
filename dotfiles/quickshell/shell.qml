@@ -230,6 +230,7 @@ ShellRoot {
                         volumeOpen = false
                         brightnessOpen = false
                         bluetoothWidget.closePopup()
+                        powerWidget.closePopup()
                     }
                 }
 
@@ -240,6 +241,7 @@ ShellRoot {
                         volumeOpen = false
                         brightnessOpen = false
                         networkWidget.closePopup()
+                        powerWidget.closePopup()
                     }
                 }
 
@@ -263,6 +265,7 @@ ShellRoot {
                                     brightnessOpen = false
                                     networkWidget.closePopup()
                                     bluetoothWidget.closePopup()
+                                    powerWidget.closePopup()
                                 }
                             }
                         }
@@ -292,6 +295,7 @@ ShellRoot {
                                 volumeOpen = false
                                 networkWidget.closePopup()
                                 bluetoothWidget.closePopup()
+                                powerWidget.closePopup()
                                 readBrightness.running = true
                             }
                         }
@@ -305,6 +309,17 @@ ShellRoot {
                     color: Style.barIcon
                     font.family: Style.monoFont
                     font.pixelSize: textSize
+                }
+
+                PowerWidget {
+                    id: powerWidget
+                    shellScreen: modelData
+                    onOpened: {
+                        volumeOpen = false
+                        brightnessOpen = false
+                        networkWidget.closePopup()
+                        bluetoothWidget.closePopup()
+                    }
                 }
             }
         }
