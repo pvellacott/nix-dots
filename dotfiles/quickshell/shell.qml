@@ -20,6 +20,7 @@ ShellRoot {
     property int batteryPercent: -1
     property string batteryState: ""
     property int targetWorkspace: 1
+    property bool wallpaperAvailable: false
 
     readonly property bool showBattery: isLaptop && batteryPercent >= 0
     readonly property bool batteryCharging: batteryState.toLowerCase().indexOf("charg") !== -1
@@ -85,6 +86,12 @@ ShellRoot {
         }
     }
 
+    Process {
+        command: ["test", "-r", "/home/smoo/Pictures/Wallpapers/snow.png"]
+        running: true
+        onExited: exitCode => wallpaperAvailable = exitCode === 0
+    }
+
     Timer {
         interval: 30000
         running: isLaptop
@@ -110,16 +117,16 @@ ShellRoot {
 
             screen: modelData
             anchors { top: true; bottom: true; left: true; right: true }
-            color: Style.barBackground
+            color: Style.background
 
             WlrLayershell.namespace: "wallpaper"
             WlrLayershell.layer: WlrLayer.Background
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+            WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
             exclusionMode: ExclusionMode.Ignore
 
             Image {
                 anchors.fill: parent
-                source: "file:///home/smoo/Pictures/Wallpapers/snow.png"
+                source: wallpaperAvailable ? "file:///home/smoo/Pictures/Wallpapers/snow.png" : ""
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
                 cache: true

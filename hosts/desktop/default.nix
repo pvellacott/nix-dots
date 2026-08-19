@@ -10,8 +10,6 @@
 
   networking.hostName = "boxtop";
 
-  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/YOUR-LUKS-UUID";
-
   services.displayManager.autoLogin = {
     enable = true;
     user = "smoo";
