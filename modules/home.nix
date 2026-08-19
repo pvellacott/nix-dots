@@ -1,6 +1,17 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
-{
+let
+  monitorConfigs = {
+    boxtop = ../hosts/desktop/monitors.lua;
+    braptop = ../hosts/braptop/monitors.lua;
+  };
+  monitorConfig = monitorConfigs.${config.networking.hostName};
+  hyprConfig = pkgs.runCommand "hypr-config" {} ''
+    mkdir -p $out
+    cp -r ${../dotfiles/hypr}/. $out/
+    cp ${monitorConfig} $out/monitors.lua
+  '';
+in {
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
@@ -8,7 +19,7 @@
     home.stateVersion = "26.05";
 
     xdg.configFile = {
-      "hypr".source = ../dotfiles/hypr;
+      "hypr".source = hyprConfig;
       "quickshell".source = ../dotfiles/quickshell;
       "foot".source = ../dotfiles/foot;
       "nvim".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/Projects/nix-dots/dotfiles/nvim";
