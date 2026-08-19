@@ -4,13 +4,14 @@
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
-  home-manager.users.smoo = { pkgs, ... }: {
+  home-manager.users.smoo = { config, pkgs, ... }: {
     home.stateVersion = "26.05";
 
     xdg.configFile = {
-      "hypr".source = ../../dotfiles/hypr;
-      "quickshell".source = ../../dotfiles/quickshell;
-      "foot".source = ../../dotfiles/foot;
+      "hypr".source = ../dotfiles/hypr;
+      "quickshell".source = ../dotfiles/quickshell;
+      "foot".source = ../dotfiles/foot;
+      "nvim".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/Projects/nix-dots/dotfiles/nvim";
     };
 
     gtk = {
@@ -35,7 +36,7 @@
       enableCompletion = true;
 
       shellAliases = {
-        rebuild = "sudo nixos-rebuild switch --flake 'path:/home/smoo/Projects/nix-dots?dir=nixos#braptop'";
+        rebuild = "sudo nixos-rebuild switch --flake 'path:/home/smoo/Projects/nix-dots#braptop'";
         vim = "nvim";
         c = "opencode";
         ls = "eza -lh --group-directories-first --icons=auto";
@@ -49,7 +50,15 @@
         bind 'set completion-ignore-case on'
         bind 'set completion-map-case on'
         bind 'set show-all-if-ambiguous on'
-        PS1='\[\e[1;38;2;129;152;144m\]\w \[\e[1;38;2;165;181;171m\]❯ \[\e[0m\]'
+
+        git_prompt() {
+          local branch dirty=""
+          branch="$(git symbolic-ref --quiet --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)" || return
+          [[ -n "$(git status --porcelain 2>/dev/null)" ]] && dirty=" ●"
+          printf ' %s%s' "$branch" "$dirty"
+        }
+
+        PS1='\[\e[1;38;2;129;152;144m\]\w\[\e[3m\]$(git_prompt)\[\e[23m\] \[\e[1;38;2;165;181;171m\]❯ \[\e[0m\]'
       '';
     };
 
@@ -57,6 +66,14 @@
       enable = true;
       icons = "auto";
       git = true;
+    };
+
+    programs.git = {
+      enable = true;
+      settings.user = {
+        name = "phil";
+        email = "philvellacott@proton.me";
+      };
     };
 
     programs.fzf = {
