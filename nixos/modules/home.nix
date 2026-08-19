@@ -7,6 +7,12 @@
   home-manager.users.smoo = { pkgs, ... }: {
     home.stateVersion = "26.05";
 
+    xdg.configFile = {
+      "hypr".source = ../../dotfiles/hypr;
+      "quickshell".source = ../../dotfiles/quickshell;
+      "foot".source = ../../dotfiles/foot;
+    };
+
     gtk = {
       enable = true;
       theme = {
@@ -29,7 +35,7 @@
       enableCompletion = true;
 
       shellAliases = {
-        rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#braptop";
+        rebuild = "sudo nixos-rebuild switch --flake /home/smoo/Projects/nix-dots/nixos#braptop";
         vim = "nvim";
         c = "opencode";
         ls = "eza -lh --group-directories-first --icons=auto";

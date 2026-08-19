@@ -3,11 +3,11 @@
 {
   imports = [
     ../../configuration.nix
-  ] ++ lib.optionals (builtins.pathExists ./hardware-configuration.nix) [
-    ./hardware-configuration.nix
+  ] ++ lib.optionals (builtins.pathExists ../../hardware-configuration.nix) [
+    ../../hardware-configuration.nix
   ];
 
-  networking.hostName = "desktop";
+  networking.hostName = "boxtop";
 
   boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/YOUR-LUKS-UUID";
 
