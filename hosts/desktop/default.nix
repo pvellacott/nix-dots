@@ -10,6 +10,11 @@
 
   networking.hostName = "boxtop";
 
+  fileSystems."/media" = {
+    fsType = "ext4";
+    options = [ "nofail" "x-gvfs-show" "x-gvfs-name=Games" ];
+  };
+
   services.displayManager.autoLogin = {
     enable = true;
     user = "smoo";

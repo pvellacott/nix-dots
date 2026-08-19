@@ -61,7 +61,7 @@ hl.config({
 hl.window_rule({
     opacity = "1.0 override 1.0 override",
     match = {
-        class = "^(imv|mpv|vlc|org.gnome.NautilusPreviewer|org.gnome.Evince|com.gabm.satty|zoom|org.kde.kdenlive|com.obsproject.Studio|com.github.PintaProject.Pinta)$",
+        class = "^(imv|mpv|vlc|steam|steam_app_[0-9]+|firefox|org.gnome.NautilusPreviewer|org.gnome.Evince|com.gabm.satty|zoom|org.kde.kdenlive|com.obsproject.Studio|com.github.PintaProject.Pinta)$",
     },
 })
 
