@@ -12,26 +12,18 @@
     let
       system = "x86_64-linux";
 
-      mkHost = { hostname, areYaGaminSon }:
+      mkHost = hostname:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit areYaGaminSon; };
           modules = [
             ./hosts/${hostname}
             ./modules/home.nix
-            ./modules/steamstuff.nix
             home-manager.nixosModules.home-manager
           ];
         };
     in {
-    nixosConfigurations.braptop = mkHost {
-      hostname = "braptop";
-      areYaGaminSon = false;
-    };
+    nixosConfigurations.braptop = mkHost "braptop";
 
-    nixosConfigurations.desktop = mkHost {
-      hostname = "desktop";
-      areYaGaminSon = true;
-    };
+    nixosConfigurations.desktop = mkHost "desktop";
   };
 }

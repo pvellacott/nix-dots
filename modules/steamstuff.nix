@@ -1,7 +1,7 @@
-{ lib, pkgs, areYaGaminSon ? false, ... }:
+{ pkgs, ... }:
 
-lib.mkIf areYaGaminSon {
-  # AMD gaming PC only: Steam, Gamescope, GameMode, and 32-bit graphics support.
+{
+
   services.xserver.videoDrivers = [ "amdgpu" ];
 
   hardware.graphics = {
@@ -24,10 +24,7 @@ lib.mkIf areYaGaminSon {
   programs.gamemode.enable = true;
 
   environment.systemPackages = with pkgs; [
-    gamescope
     mangohud
     protonup-qt
-    vulkan-tools
-    mesa-demos
   ];
 }

@@ -14,6 +14,21 @@
       "nvim".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/Projects/nix-dots/dotfiles/nvim";
     };
 
+    xdg.userDirs = {
+      enable = true;
+      createDirectories = true;
+
+      desktop = "${config.home.homeDirectory}/Desktop";
+      documents = "${config.home.homeDirectory}/Documents";
+      download = "${config.home.homeDirectory}/Downloads";
+      music = "${config.home.homeDirectory}/Music";
+      pictures = "${config.home.homeDirectory}/Pictures";
+      projects = "${config.home.homeDirectory}/Projects";
+      videos = "${config.home.homeDirectory}/Videos";
+
+      extraConfig.XDG_WORK_DIR = "${config.home.homeDirectory}/Work";
+    };
+
     gtk = {
       enable = true;
       theme = {

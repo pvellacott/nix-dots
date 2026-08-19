@@ -2,7 +2,7 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, areYaGaminSon ? false, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   # Use the systemd-boot EFI boot loader.
@@ -102,7 +102,7 @@
     builtins.elem (lib.getName pkg) ([
       "discord"
       "obsidian"
-    ] ++ lib.optionals areYaGaminSon [
+    ] ++ lib.optionals config.programs.steam.enable [
       "steam"
       "steam-original"
       "steam-run"
