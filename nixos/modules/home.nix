@@ -35,7 +35,7 @@
       enableCompletion = true;
 
       shellAliases = {
-        rebuild = "sudo nixos-rebuild switch --flake /home/smoo/Projects/nix-dots/nixos#braptop";
+        rebuild = "sudo nixos-rebuild switch --flake 'path:/home/smoo/Projects/nix-dots?dir=nixos#braptop'";
         vim = "nvim";
         c = "opencode";
         ls = "eza -lh --group-directories-first --icons=auto";
