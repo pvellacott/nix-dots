@@ -1,17 +1,6 @@
-{ config, pkgs, ... }:
+{ ... }:
 
-let
-  monitorConfigs = {
-    boxtop = ../hosts/desktop/monitors.lua;
-    braptop = ../hosts/braptop/monitors.lua;
-  };
-  monitorConfig = monitorConfigs.${config.networking.hostName};
-  hyprConfig = pkgs.runCommand "hypr-config" {} ''
-    mkdir -p $out
-    cp -r ${../dotfiles/hypr}/. $out/
-    cp ${monitorConfig} $out/monitors.lua
-  '';
-in {
+{
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
@@ -19,7 +8,6 @@ in {
     home.stateVersion = "26.05";
 
     xdg.configFile = {
-      "hypr".source = hyprConfig;
       "quickshell".source = ../dotfiles/quickshell;
       "foot".source = ../dotfiles/foot;
       "rofi".source = ../dotfiles/rofi;
@@ -129,19 +117,5 @@ in {
       };
     };
 
-    systemd.user.services.hypridle = {
-      Unit = {
-        Description = "Hyprland idle daemon";
-        After = [ "graphical-session.target" ];
-        PartOf = [ "graphical-session.target" ];
-      };
-
-      Service = {
-        ExecStart = "${pkgs.hypridle}/bin/hypridle";
-        Restart = "on-failure";
-      };
-
-      Install.WantedBy = [ "graphical-session.target" ];
-    };
   };
 }

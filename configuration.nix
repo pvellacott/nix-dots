@@ -5,6 +5,10 @@
 { config, lib, pkgs, ... }:
 
 {
+  imports = [
+    ./modules/hyprland.nix
+  ];
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -40,12 +44,6 @@
   services.xserver = {
     enable = true;
   };
-
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-  };
-
 
   # Automatically clean old NixOS generations/store paths.
   nix.gc = {
@@ -93,8 +91,6 @@
     openFirewall = true;
   };
 
-  environment.sessionVariables.NIXOS_OZONE_WL = "1";
-
   # Font
 
   fonts.packages = with pkgs; [
@@ -132,26 +128,6 @@
     unzip
     wget
     localsend
-
-    # Desktop shell / application launcher
-    foot
-    quickshell
-    rofi
-
-    # Hyprland session management
-    hyprlock
-    hypridle
-    kanshi
-
-    # Screenshots, clipboard, and notifications
-    grim
-    slurp
-    wl-clipboard
-    libnotify
-
-    # Hardware and media controls
-    brightnessctl
-    playerctl
 
     # Skype
     discord
