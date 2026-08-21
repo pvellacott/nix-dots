@@ -1,0 +1,12 @@
+configuration {
+    modi: "drun";
+    show-icons: true;
+    icon-theme: "Yaru-blue";
+    drun-display-format: "{name}";
+    matching: "fuzzy";
+    sort: true;
+    terminal: "foot";
+    font: "JetBrainsMono Nerd Font 13";
+}
+
+@theme "dos-moos"

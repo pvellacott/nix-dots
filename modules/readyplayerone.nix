@@ -24,7 +24,9 @@
   programs.gamemode.enable = true;
 
   environment.systemPackages = with pkgs; [
+    heroic
     mangohud
+    # prismlauncher # Nixpkgs replacement for Omarchy's minecraft-launcher.
     protonup-qt
   ];
 }

@@ -36,8 +36,7 @@
   #   useXkbConfig = true; # use xkb.options in tty.
   # };
 
-  # Enable the X11 windowing system.
-  # services.xserver.enable = true;
+  # Window server stuff
   services.xserver = {
     enable = true;
   };
@@ -56,10 +55,6 @@
   };
  
   nix.settings.experimental-features = [ "nix-command" "flakes" ]; 
-
-  # Configure keymap in X11
-  # services.xserver.xkb.layout = "us";
-  # services.xserver.xkb.options = "eurosign:e,caps:escape";
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
@@ -88,6 +83,16 @@
 
   programs.firefox.enable = true;
 
+  programs.thunar.enable = true;
+  services.gvfs.enable = true;
+  services.tumbler.enable = true;
+  #SMB Nas stuff
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
   # Font
@@ -96,7 +101,7 @@
     nerd-fonts.jetbrains-mono
   ];
 
-  # Packages list
+  # Packages
 
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) ([
@@ -108,43 +113,54 @@
       "steam-run"
       "steam-unwrapped"
     ]);
- 
+
   environment.systemPackages = with pkgs; [
+    # Dev
     vim
     neovim
-    fastfetch
-    btop
+    git
+    lazygit
+    gcc
+    tree-sitter
     ripgrep
     fd
-    gcc
-    lazygit
-    tree-sitter
+    opencode
+
+    # Utilities
+    fastfetch
+    btop
     unzip
-    git
     wget
+    localsend
+
+    # Desktop shell / application launcher
     foot
-    waybar
     quickshell
+    rofi
+
+    # Hyprland session management
     hyprlock
     hypridle
     kanshi
-    rofi
-    thunar
-    tumbler
-    gvfs
+
+    # Screenshots, clipboard, and notifications
     grim
     slurp
     wl-clipboard
     libnotify
+
+    # Hardware and media controls
     brightnessctl
     playerctl
-    opencode
+
+    # Skype
     discord
     obsidian
     signal-desktop
+
+    # Media
     imv
     mpv
-    localsend
     cliamp
   ];
 

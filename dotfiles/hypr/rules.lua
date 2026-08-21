@@ -31,6 +31,16 @@ hl.window_rule({
     no_focus = true,
 })
 
+hl.window_rule({
+    name = "float-thunar-file-operations",
+    match = {
+        class = "^thunar$",
+        title = "^(File Operation Progress|Copying.*|Moving.*|Deleting.*|Trashing.*|Restoring.*)$",
+    },
+
+    float = true,
+})
+
 -- Layer rules also return a handle.
 -- local overlayLayerRule = hl.layer_rule({
 --     name  = "no-anim-overlay",
@@ -38,6 +48,13 @@ hl.window_rule({
 --     no_anim = true,
 -- })
 -- overlayLayerRule:set_enabled(false)
+
+hl.layer_rule({
+    name = "soft-rofi-animation",
+    match = { namespace = "^rofi$" },
+
+    animation = "fade",
+})
 
 -- Hyprland-run windowrule
 hl.window_rule({

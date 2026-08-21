@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
@@ -12,6 +13,7 @@ Item {
     required property var shellScreen
 
     property bool powerOpen: false
+    property real iconSize: 16
     property string pendingAction: ""
 
     signal opened()
@@ -35,7 +37,7 @@ Item {
     }
 
     function commandForAction(action) {
-        if (action === "lock") return ["bash", "-lc", "pidof hyprlock || hyprlock"]
+        if (action === "lock") return ["bash", "-c", "pidof hyprlock || hyprlock"]
         if (action === "sleep") return ["systemctl", "suspend"]
         if (action === "shutdown") return ["systemctl", "poweroff"]
         if (action === "reboot") return ["systemctl", "reboot"]
@@ -47,6 +49,12 @@ Item {
         context: Qt.ApplicationShortcut
         enabled: powerOpen
         onActivated: closePopup()
+    }
+
+    HyprlandFocusGrab {
+        windows: [powerPopupWindow]
+        active: root.powerOpen
+        onCleared: root.closePopup()
     }
 
     Process {
@@ -61,7 +69,7 @@ Item {
         text: "󰐥"
         color: Style.barIcon
         font.family: Style.monoFont
-        font.pixelSize: 16
+        font.pixelSize: root.iconSize
 
         MouseArea {
             anchors.fill: parent
@@ -71,6 +79,8 @@ Item {
     }
 
     PanelWindow {
+        id: powerPopupWindow
+
         screen: root.shellScreen
         visible: root.powerOpen
         implicitWidth: 190

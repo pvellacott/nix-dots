@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
@@ -12,6 +13,7 @@ Item {
     required property var shellScreen
 
     property bool networkOpen: false
+    property real iconSize: 16
     property string connectionType: "none"
     property string connectionName: "Disconnected"
     property string pendingSsid: ""
@@ -20,6 +22,7 @@ Item {
     property bool scanning: false
     property bool networkEnabled: true
     property string networkTarget: "on"
+    property real maxPopupHeight: 700
 
     signal opened()
 
@@ -28,6 +31,12 @@ Item {
         context: Qt.ApplicationShortcut
         enabled: networkOpen
         onActivated: closePopup()
+    }
+
+    HyprlandFocusGrab {
+        windows: [networkPopupWindow]
+        active: root.networkOpen
+        onCleared: root.closePopup()
     }
 
     width: networkIcon.implicitWidth
@@ -256,7 +265,7 @@ Item {
         text: root.icon()
         color: Style.barIcon
         font.family: Style.monoFont
-        font.pixelSize: 16
+        font.pixelSize: root.iconSize
 
         MouseArea {
             anchors.fill: parent
@@ -265,10 +274,16 @@ Item {
     }
 
     PanelWindow {
+        id: networkPopupWindow
+
         screen: root.shellScreen
         visible: root.networkOpen
         implicitWidth: 360
-        implicitHeight: 430
+        implicitHeight: Math.min(
+            root.maxPopupHeight,
+            root.shellScreen.height - 54,
+            Math.max(180, 126 + networkList.contentHeight + (pendingSsid.length > 0 ? 72 : 0) + (statusMessage.length > 0 ? 22 : 0))
+        )
         anchors { top: true; right: true }
         margins { top: 42; right: 12 }
         color: "transparent"
@@ -310,42 +325,6 @@ Item {
 
                     Item { Layout.fillWidth: true }
 
-                    Text {
-                        text: root.icon()
-                        color: Style.border
-                        font.family: Style.monoFont
-                        font.pixelSize: 16
-                    }
-                }
-
-                Text {
-                    Layout.fillWidth: true
-                    text: networkEnabled ? connectionName : "Internet disabled"
-                    color: Style.mutedForeground
-                    font.family: Style.uiFont
-                    font.pixelSize: 12
-                    elide: Text.ElideRight
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 1
-                    color: Style.inactiveBorder
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Text {
-                        text: "Internet"
-                        color: Style.foreground
-                        font.family: Style.uiFont
-                        font.pixelSize: 14
-                        font.bold: true
-                    }
-
-                    Item { Layout.fillWidth: true }
-
                     Rectangle {
                         Layout.preferredWidth: 78
                         Layout.preferredHeight: 24
@@ -369,6 +348,35 @@ Item {
                             onClicked: toggleNetwork()
                         }
                     }
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: networkEnabled ? connectionName : "Internet disabled"
+                    color: Style.mutedForeground
+                    font.family: Style.uiFont
+                    font.pixelSize: 12
+                    elide: Text.ElideRight
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 1
+                    color: Style.inactiveBorder
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+
+                    Text {
+                        text: "Wi-Fi"
+                        color: Style.foreground
+                        font.family: Style.uiFont
+                        font.pixelSize: 14
+                        font.bold: true
+                    }
+
+                    Item { Layout.fillWidth: true }
 
                     Rectangle {
                         Layout.preferredWidth: 72
@@ -399,11 +407,15 @@ Item {
                 }
 
                 ListView {
+                    id: networkList
+
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    Layout.preferredHeight: contentHeight
                     clip: true
                     spacing: 6
                     model: networkModel
+                    ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
                     delegate: Rectangle {
                         required property bool active

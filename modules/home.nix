@@ -22,6 +22,7 @@ in {
       "hypr".source = hyprConfig;
       "quickshell".source = ../dotfiles/quickshell;
       "foot".source = ../dotfiles/foot;
+      "rofi".source = ../dotfiles/rofi;
       "nvim".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/Projects/nix-dots/dotfiles/nvim";
     };
 

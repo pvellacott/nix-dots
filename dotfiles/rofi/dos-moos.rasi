@@ -1,0 +1,91 @@
+* {
+    background: #131516;
+    background-alt: #1b1f1d;
+    foreground: #F8EBE3;
+    muted: #819890;
+    border: #A5B5AB;
+    inactive-border: #35373A;
+    selected: #33403a;
+    critical: #F0334A;
+}
+
+window {
+    width: 560px;
+    border: 1px;
+    border-color: @border;
+    border-radius: 4px;
+    padding: 0px;
+    background-color: @background;
+}
+
+mainbox {
+    padding: 14px;
+    spacing: 12px;
+    background-color: transparent;
+}
+
+inputbar {
+    children: [ entry ];
+    padding: 10px 12px;
+    border: 0px 0px 1px 0px;
+    border-color: @inactive-border;
+    background-color: @background-alt;
+}
+
+entry {
+    placeholder: "Search";
+    placeholder-color: @muted;
+    text-color: @foreground;
+    background-color: transparent;
+}
+
+listview {
+    columns: 1;
+    lines: 8;
+    fixed-height: true;
+    scrollbar: false;
+    spacing: 4px;
+    background-color: transparent;
+}
+
+element {
+    padding: 9px 10px;
+    spacing: 10px;
+    border: 1px;
+    border-color: transparent;
+    border-radius: 4px;
+    background-color: transparent;
+}
+
+element selected.normal {
+    border-color: @border;
+    background-color: @selected;
+}
+
+element normal.urgent,
+element selected.urgent {
+    text-color: @critical;
+}
+
+element-icon {
+    size: 24px;
+    background-color: transparent;
+}
+
+element-text {
+    vertical-align: 0.5;
+    text-color: @foreground;
+    background-color: transparent;
+}
+
+message {
+    padding: 10px;
+    border: 1px 0px 0px 0px;
+    border-color: @inactive-border;
+    background-color: @background-alt;
+}
+
+textbox {
+    text-color: @foreground;
+    background-color: transparent;
+}

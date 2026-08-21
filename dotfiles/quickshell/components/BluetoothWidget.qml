@@ -1,6 +1,6 @@
 import Quickshell
 import Quickshell.Bluetooth
-import Quickshell.Io
+import Quickshell.Hyprland
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Controls
@@ -13,16 +13,13 @@ Item {
     required property var shellScreen
 
     property bool bluetoothOpen: false
-    property bool powered: false
-    property bool discovering: false
-    property string powerTarget: "on"
+    property real iconSize: 16
     property string statusMessage: ""
-
 
     readonly property var adapter: Bluetooth.defaultAdapter
     readonly property bool available: adapter !== null
-    readonly property bool enabled: powered
-    readonly property bool scanning: enabled && available && (discovering || adapter.discovering)
+    readonly property bool enabled: available && adapter.enabled
+    readonly property bool scanning: enabled && adapter.discovering
 
     signal opened()
 
@@ -33,8 +30,15 @@ Item {
         onActivated: closePopup()
     }
 
+    HyprlandFocusGrab {
+        windows: [bluetoothPopupWindow]
+        active: root.bluetoothOpen
+        onCleared: root.closePopup()
+    }
+
     width: bluetoothIcon.implicitWidth
     height: bluetoothIcon.implicitHeight
+    visible: available
 
     function closePopup() {
         bluetoothOpen = false
@@ -44,20 +48,17 @@ Item {
         bluetoothOpen = !bluetoothOpen
         if (bluetoothOpen) {
             opened()
-            readController.running = true
         }
     }
 
     function toggleBluetooth() {
-        if (togglePower.running) return
-        powerTarget = enabled ? "off" : "on"
+        if (!available) return
         statusMessage = ""
-        if (powerTarget === "off") discovering = false
-        togglePower.running = true
+        adapter.enabled = !adapter.enabled
     }
 
     function toggleDiscovery() {
-        if (!enabled) {
+        if (!available || !enabled) {
             statusMessage = "Turn Bluetooth on before scanning"
             return
         }
@@ -66,60 +67,13 @@ Item {
         adapter.discovering = !adapter.discovering
     }
 
-    function updateControllerState(output) {
-        var text = String(output)
-        if (text.indexOf("Soft blocked: yes") !== -1) powered = false
-        else if (text.indexOf("Powered: yes") !== -1) powered = true
-        else if (text.indexOf("Powered: no") !== -1) powered = false
-        else if (text.indexOf("No default controller") !== -1) powered = false
-
-        if (text.indexOf("Discovering: yes") !== -1) discovering = true
-        else if (text.indexOf("Discovering: no") !== -1) discovering = false
-        else if (!powered) discovering = false
-    }
-
-    Process {
-        id: readController
-        command: ["bash", "-lc", "rfkill list bluetooth; bluetoothctl show 2>&1"]
-        stdout: StdioCollector {
-            onStreamFinished: updateControllerState(text)
-        }
-    }
-
-    Process {
-        id: togglePower
-        command: powerTarget === "off"
-            ? ["bash", "-lc", "bluetoothctl power off; rfkill block bluetooth"]
-            : ["bash", "-lc", "rfkill unblock bluetooth; sleep 1; bluetoothctl power on"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                statusMessage = String(text).trim()
-                readController.running = true
-            }
-        }
-        stderr: StdioCollector {
-            onStreamFinished: {
-                statusMessage = String(text).trim()
-                readController.running = true
-            }
-        }
-    }
-
-    Timer {
-        interval: 2000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: if (!readController.running) readController.running = true
-    }
-
     Text {
         id: bluetoothIcon
         anchors.centerIn: parent
         text: enabled ? "󰂯" : "󰂲"
         color: Style.barIcon
         font.family: Style.monoFont
-        font.pixelSize: 16
+        font.pixelSize: root.iconSize
 
         MouseArea {
             anchors.fill: parent
@@ -128,6 +82,8 @@ Item {
     }
 
     PanelWindow {
+        id: bluetoothPopupWindow
+
         screen: root.shellScreen
         visible: root.bluetoothOpen
         implicitWidth: 320
@@ -174,7 +130,7 @@ Item {
                     Item { Layout.fillWidth: true }
 
                     Text {
-                        text: scanning ? "Scanning" : enabled ? "On" : "Off"
+                        text: !available ? "Unavailable" : scanning ? "Scanning" : enabled ? "On" : "Off"
                         color: Style.mutedForeground
                         font.family: Style.monoFont
                         font.pixelSize: 12
@@ -189,14 +145,14 @@ Item {
                         Layout.preferredWidth: 86
                         Layout.preferredHeight: 28
                         radius: 14
-                        color: togglePower.running || powerMouse.pressed ? Style.selected : enabled ? Style.enabled : Style.disabled
+                        color: powerMouse.pressed ? Style.selected : enabled ? Style.enabled : Style.disabled
                         border.color: Style.border
                         border.width: Style.borderWidth
                         opacity: 1
 
                         Text {
                             anchors.centerIn: parent
-                            text: togglePower.running ? "Working" : enabled ? "Turn off" : "Turn on"
+                            text: enabled ? "Turn off" : "Turn on"
                             color: Style.foreground
                             font.family: Style.uiFont
                             font.pixelSize: 12
@@ -205,7 +161,7 @@ Item {
                         MouseArea {
                             id: powerMouse
                             anchors.fill: parent
-                            enabled: !togglePower.running
+                            enabled: available
                             onClicked: toggleBluetooth()
                         }
                     }
@@ -240,7 +196,7 @@ Item {
 
                 Text {
                     Layout.fillWidth: true
-                    visible: !available && enabled
+                    visible: !available
                     text: "No Bluetooth adapter found"
                     color: Style.mutedForeground
                     font.family: Style.uiFont
